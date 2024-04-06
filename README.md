@@ -25,7 +25,8 @@ SOFTWARE.
 # Optimizer
 A .bat file to optimize windows i will add more tweaks later maybe the restore point doesn't work i need to fix that.
 
-if you see this ![microsoft-defender-smartscreen-warning](https://github.com/tryhard1923/Optimizer/assets/157330808/006a618a-d982-44ad-b086-a673f313ea06) press on more info after that press run anyway
+if you see the windows smart screen press on more info after that press run anyway
+![microsoft-defender-smartscreen-warning](https://github.com/tryhard1923/Optimizer/assets/157330808/006a618a-d982-44ad-b086-a673f313ea06)
 
 
 # Photos
