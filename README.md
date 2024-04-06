@@ -40,3 +40,5 @@ A .bat file to optimize windows i will add more tweaks later maybe the restore p
 
 
 ![2024-04-06 23_34_21-](https://github.com/tryhard1923/Optimizer/assets/157330808/3f4c48b9-10eb-459d-9547-29812468e288)
+
+![2024-04-06 23_33_29-](https://github.com/tryhard1923/Optimizer/assets/157330808/5d715a49-8e49-457c-9c17-f4b106729fc8)
