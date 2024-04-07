@@ -1,4 +1,5 @@
 @echo off
+
 REM Check if the script is running as administrator
 NET FILE 1>NUL 2>NUL
 if '%errorlevel%' == '0' (goto :start) else (goto :runasadmin)
@@ -28,15 +29,33 @@ reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\CrashControl" /v "D
 rem Add registry entry under HKCU\Console
 reg add "HKCU\Console" /v "VirtualTerminalLevel" /t REG_DWORD /d 1 /f >nul 2>&1
 
-:license
+REM Display the MIT License Agreement
 cls
-echo User License Agreement
+echo MIT License Agreement
 echo ----------------------
-
-REM Display the license agreement
-type "C:\Optimizer\license.txt"
-
 echo.
+echo Copyright (c) 2024 tryhard1923
+echo.
+echo Permission is hereby granted, free of charge, to any person obtaining a copy
+echo of this software and associated documentation files (the "Software"), to deal
+echo in the Software without restriction, including without limitation the rights
+echo to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+echo copies of the Software, and to permit persons to whom the Software is
+echo furnished to do so, subject to the following conditions:
+echo.
+echo The above copyright notice and this permission notice shall be included in all
+echo copies or substantial portions of the Software.
+echo.
+echo THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+echo IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+echo FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+echo AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+echo LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+echo OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+echo SOFTWARE.
+echo.
+
+REM Ask the user to read the agreement and agree to the terms
 set /p agree=Do you agree to the terms and conditions? (yes/no): 
 
 REM Check user input
@@ -1128,29 +1147,18 @@ pause
 goto menu
 
 :backup_registry_and_restore_point
-echo Backing up registry...
-reg export HKLM\Software %SYSTEMDRIVE%\optimizer\RegistryBackup.reg >nul 2>&1
-echo Registry backup completed.
+echo Creating a restore point...
+%SystemRoot%\System32\cmd.exe /c %SystemRoot%\System32\wbem\WMIC.exe /Namespace:\\root\default Path SystemRestore Call CreateRestorePoint "Registry Backup", 100, 7
 
-echo Creating system restore point...
-WMIC /Namespace:\\root\default Path SystemRestore Call CreateRestorePoint "System Tweaks Backup", 100, 7 >nul 2>&1
-echo System restore point created.
+echo Deleting old registry backup...
+del /q %SYSTEMDRIVE%\optimizer\optimizerRevert\registry_backup.reg >nul 2>&1
 
-rem Creating a marker file
-echo Backup and restore point created.>"%SYSTEMDRIVE%\optimizer\BackupRestoreMarker.txt"
+echo Creating backup of registry...
+reg export HKLM\Software\ %SYSTEMDRIVE%\optimizer\optimizerRevert\registry_backup.reg >nul 2>&1
 
+pause
 goto menu
 
-:restore_registry_and_restore_point
-echo Restoring registry...
-reg import %SYSTEMDRIVE%\optimizer\RegistryBackup.reg >nul 2>&1
-echo Registry restored.
-
-echo Restoring to previous system restore point...
-WMIC /Namespace:\\root\default Path SystemRestore Call Restore "%RESTORE_POINT_NAME%", 100 >nul 2>&1
-echo System restored to previous restore point.
-
-goto menu
 
 :windows_settings
 cls
