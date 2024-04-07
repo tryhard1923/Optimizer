@@ -33,16 +33,14 @@ if you see the windows smart screen press on more info after that press run anyw
 
 ![2024-04-06 23_33_14-](https://github.com/tryhard1923/Optimizer/assets/157330808/66575cf5-c722-41d7-9252-950373357b4a)
 
+![2024-04-07 20_53_52-Administrator_  System Tweaks Menu](https://github.com/tryhard1923/Optimizer/assets/157330808/b1487db3-a440-48b5-8883-0bb9930bd6fe)
 
-![2024-04-06 23_33_29-](https://github.com/tryhard1923/Optimizer/assets/157330808/f1bcfdeb-0ef2-4bb6-b8ca-ba563f130223)
-
+![2024-04-07 20_54_43-Administrator_  System Tweaks Menu](https://github.com/tryhard1923/Optimizer/assets/157330808/5755dcd6-dd1f-4ded-96dd-67787323dcfe)
 
 ![2024-04-06 23_33_42-Administrator_  System Tweaks Menu](https://github.com/tryhard1923/Optimizer/assets/157330808/0e8bcc85-1e03-4dac-84ce-ebfeebfcaf85)
 
-
 ![2024-04-06 23_34_04-](https://github.com/tryhard1923/Optimizer/assets/157330808/791698d0-492e-494f-bc31-7bde2780a639)
-
 
 ![2024-04-06 23_34_21-](https://github.com/tryhard1923/Optimizer/assets/157330808/3f4c48b9-10eb-459d-9547-29812468e288)
 
-![2024-04-06 23_33_29-](https://github.com/tryhard1923/Optimizer/assets/157330808/5d715a49-8e49-457c-9c17-f4b106729fc8)
+
