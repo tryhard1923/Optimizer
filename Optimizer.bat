@@ -1,8 +1,19 @@
 @echo off
 
 REM Check if the script is running as administrator
-NET FILE 1>NUL 2>NUL
-if '%errorlevel%' == '0' (goto :start) else (goto :runasadmin)
+>nul 2>&1 "%SYSTEMROOT%\system32\cacls.exe" "%SYSTEMROOT%\system32\config\system"
+
+REM If the errorlevel is 0, the script has admin rights
+if '%errorlevel%' NEQ '0' (
+    echo Requesting administrative privileges...
+    goto UACPrompt
+) else ( goto :start )
+
+:UACPrompt
+echo Set UAC = CreateObject^("Shell.Application"^) > "%temp%\getadmin.vbs"
+echo UAC.ShellExecute "%~s0", "", "", "runas", 1 >> "%temp%\getadmin.vbs"
+"%temp%\getadmin.vbs"
+exit /B
 
 :start
 REM The script starts here
@@ -30,6 +41,7 @@ rem Add registry entry under HKCU\Console
 reg add "HKCU\Console" /v "VirtualTerminalLevel" /t REG_DWORD /d 1 /f >nul 2>&1
 
 REM Display the MIT License Agreement
+:license
 cls
 echo MIT License Agreement
 echo ----------------------
@@ -58,14 +70,70 @@ echo.
 REM Ask the user to read the agreement and agree to the terms
 set /p agree=Do you agree to the terms and conditions? (yes/no): 
 
-REM Check user input
-if /i "%agree%"=="yes" (
-    echo You have agreed to the terms and conditions.
-    REM Continue with your script's operations here...
-    goto menu
-) else (
+REM Check user input for agreement
+if /i "%agree%"=="no" (
     echo You have not agreed to the terms and conditions. Exiting...
     exit /b 1
+) else if /i "%agree%"=="yes" (
+    echo You have agreed to the terms and conditions.
+) else if /i "%agree%"=="y" (
+    echo You have agreed to the terms and conditions.
+) else if /i "%agree%"=="n" (
+    echo You have not agreed to the terms and conditions. Exiting...
+    exit /b 1
+) else (
+    echo Invalid input. Please type 'yes' or 'no'.
+    goto license
+)
+
+REM Clear the screen after the user agrees to the license terms
+cls
+
+REM Backup option menu
+:backup_menu
+cls
+echo Backup Option
+echo ----------------------
+echo 1. Yes, create a backup of the registry and a system restore point
+echo 2. No, skip backup
+echo.
+
+set /p backup_choice=Do you want to create a backup of the registry and a system restore point? (yes/no): 
+
+REM Check user input
+if /i "%backup_choice%"=="yes" (
+    echo Creating a restore point...
+    %SystemRoot%\System32\cmd.exe /c %SystemRoot%\System32\wbem\WMIC.exe /Namespace:\\root\default Path SystemRestore Call CreateRestorePoint "Optimizer Backup", 100, 7
+
+    echo Deleting old registry backup...
+    del /q %SYSTEMDRIVE%\optimizer\optimizerRevert\registry_backup.reg >nul 2>&1
+
+    echo Creating backup of registry...
+    reg export HKLM\Software\ %SYSTEMDRIVE%\optimizer\optimizerRevert\registry_backup.reg >nul 2>&1
+
+    echo Backup of registry and system restore point created successfully.
+    pause
+) else if /i "%backup_choice%"=="no" (
+    echo No backup of registry and system restore point will be created.
+    pause
+) else if /i "%backup_choice%"=="y" (
+    echo Creating a restore point...
+    %SystemRoot%\System32\cmd.exe /c %SystemRoot%\System32\wbem\WMIC.exe /Namespace:\\root\default Path SystemRestore Call CreateRestorePoint "Registry Backup", 100, 7
+
+    echo Deleting old registry backup...
+    del /q %SYSTEMDRIVE%\optimizer\optimizerRevert\registry_backup.reg >nul 2>&1
+
+    echo Creating backup of registry...
+    reg export HKLM\Software\ %SYSTEMDRIVE%\optimizer\optimizerRevert\registry_backup.reg >nul 2>&1
+
+    echo Backup of registry and system restore point created successfully.
+    pause
+) else if /i "%backup_choice%"=="n" (
+    echo No backup of registry and system restore point will be created.
+    pause
+) else (
+    echo Invalid input. Please type 'yes' or 'no'.
+    goto backup_menu
 )
 
 :menu
@@ -81,10 +149,9 @@ echo 5. Game Tweaks
 echo 6. Mouse Tweaks
 echo 7. Keyboard Tweaks
 echo 8. MSI Mode
-echo 9. Backup Registry and Create Restore Point
-echo 10. Restore Registry and Windows Restore Point
-echo 11. Windows Settings
-echo 12. Exit
+echo 9. Restore Registry and Windows Restore Point
+echo 10. Windows Settings
+echo 11. Exit
 
 set "choice="
 set /p choice=Enter your choice: 
@@ -105,21 +172,14 @@ if "%choice%"=="5" goto game
 if "%choice%"=="6" goto mouse
 if "%choice%"=="7" goto kbm
 if "%choice%"=="8" goto msi
-if "%choice%"=="9" goto backup_registry_and_restore_point
-if "%choice%"=="10" goto restore_registry_and_restore_point
-if "%choice%"=="11" goto windows_settings
-if "%choice%"=="12" goto end
+if "%choice%"=="9" goto restore_registry_and_restore_point
+if "%choice%"=="10" goto windows_settings
+if "%choice%"=="11" goto end
 
 rem If the input is not a valid choice, display an error message and prompt again
 echo Invalid choice. Please enter a valid choice.
 timeout /t 2 >nul
 goto menu
-
-:runasadmin
-echo Please run this script as an administrator.
-echo Press any key to exit...
-pause >nul
-exit
 
 :about
 cls
@@ -1146,20 +1206,6 @@ echo Enabled MSI mode..
 pause
 goto menu
 
-:backup_registry_and_restore_point
-echo Creating a restore point...
-%SystemRoot%\System32\cmd.exe /c %SystemRoot%\System32\wbem\WMIC.exe /Namespace:\\root\default Path SystemRestore Call CreateRestorePoint "Registry Backup", 100, 7
-
-echo Deleting old registry backup...
-del /q %SYSTEMDRIVE%\optimizer\optimizerRevert\registry_backup.reg >nul 2>&1
-
-echo Creating backup of registry...
-reg export HKLM\Software\ %SYSTEMDRIVE%\optimizer\optimizerRevert\registry_backup.reg >nul 2>&1
-
-pause
-goto menu
-
-
 :windows_settings
 cls
 echo Windows Settings Menu
@@ -1479,6 +1525,17 @@ timeout /t 1 /nobreak > NUL
 echo Disabled Activity...
 pause
 goto windows_settings
+
+:restore_registry_and_restore_point
+echo Restoring registry from backup...
+reg import %SYSTEMDRIVE%\optimizer\optimizerRevert\registry_backup.reg >nul 2>&1
+
+echo Restoring system to previous restore point...
+%SystemRoot%\System32\wbem\WMIC.exe /Namespace:\\root\default Path SystemRestore Call CreateRestorePoint "Optimizer Restore", 100, 7
+
+echo Registry and system restore point restored successfully.
+pause
+goto menu
 
 :end
 exit /b
