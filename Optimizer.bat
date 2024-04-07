@@ -149,7 +149,7 @@ echo 5. Game Tweaks
 echo 6. Mouse Tweaks
 echo 7. Keyboard Tweaks
 echo 8. MSI Mode
-echo 9. Restore Registry and Windows Restore Point
+echo 9. Restore Windows and Registry
 echo 10. Windows Settings
 echo 11. Exit
 
