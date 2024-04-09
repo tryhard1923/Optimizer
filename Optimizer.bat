@@ -151,7 +151,8 @@ echo 7. Keyboard Tweaks
 echo 8. MSI Mode
 echo 9. Restore Windows and Registry
 echo 10. Windows Settings
-echo 11. Exit
+echo 11. Disable Services
+echo 12. Exit
 
 set "choice="
 set /p choice=Enter your choice: 
@@ -174,7 +175,8 @@ if "%choice%"=="7" goto kbm
 if "%choice%"=="8" goto msi
 if "%choice%"=="9" goto restore_registry_and_restore_point
 if "%choice%"=="10" goto windows_settings
-if "%choice%"=="11" goto end
+if "%choice%"=="11" goto disable_services
+if "%choice%"=="12" goto end
 
 rem If the input is not a valid choice, display an error message and prompt again
 echo Invalid choice. Please enter a valid choice.
@@ -1533,7 +1535,54 @@ reg import %SYSTEMDRIVE%\optimizer\optimizerRevert\registry_backup.reg >nul 2>&1
 echo Restoring system to previous restore point...
 %SystemRoot%\System32\wbem\WMIC.exe /Namespace:\\root\default Path SystemRestore Call CreateRestorePoint "Optimizer Restore", 100, 7
 
+echo Opening System Restore...
+%SystemRoot%\System32\SystemPropertiesProtection.exe /restore
+
 echo Registry and system restore point restored successfully.
+pause
+goto menu
+
+:disable_services
+echo Disabling services...
+sc stop BthAvctpSvc >nul 2>&1
+sc config BthAvctpSvc start= disabled >nul 2>&1
+echo BthAvctpSvc disabled.
+sc stop autotimesvc >nul 2>&1
+sc config autotimesvc start= disabled >nul 2>&1
+echo autotimesvc disabled.
+sc stop MapsBroker >nul 2>&1
+sc config MapsBroker start= disabled >nul 2>&1
+echo MapsBroker disabled.
+sc stop BDESVC >nul 2>&1
+sc config BDESVC start= disabled >nul 2>&1
+echo BDESVC disabled.
+sc stop Browser >nul 2>&1
+sc config Browser start= disabled >nul 2>&1
+echo Browser disabled.
+sc stop DiagTrack >nul 2>&1
+sc config DiagTrack start= disabled >nul 2>&1
+echo DiagTrack disabled.
+sc stop TrkWks >nul 2>&1
+sc config TrkWks start= disabled >nul 2>&1
+echo TrkWks disabled.
+sc stop SharedAccess >nul 2>&1
+sc config SharedAccess start= disabled >nul 2>&1
+echo SharedAccess disabled.
+sc stop Netlogon >nul 2>&1
+sc config Netlogon start= disabled >nul 2>&1
+echo Netlogon disabled.
+sc stop WpcMonSvc >nul 2>&1
+sc config WpcMonSvc start= disabled >nul 2>&1
+echo WpcMonSvc disabled.
+sc stop RemoteRegistry >nul 2>&1
+sc config RemoteRegistry start= disabled >nul 2>&1
+echo RemoteRegistry disabled.
+sc stop wisvc >nul 2>&1
+sc config wisvc start= disabled >nul 2>&1
+echo wisvc disabled.
+sc stop lmhosts >nul 2>&1
+sc config lmhosts start= disabled >nul 2>&1
+echo Services disabled.
 pause
 goto menu
 
