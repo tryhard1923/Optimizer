@@ -1127,6 +1127,11 @@ powercfg -setacvalueindex scheme_current sub_processor CPMINCORES 100
 powercfg /setactive SCHEME_CURRENT
 timeout /t 1 /nobreak > NUL
 
+echo Setting CSRSS to Realtime
+Reg.exe add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\csrss.exe\PerfOptions" /v "CpuPriorityClass" /t REG_DWORD /d "4" /f 
+Reg.exe add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\csrss.exe\PerfOptions" /v "IoPriority" /t REG_DWORD /d "3" /f 
+timeout /t 1 /nobreak > NUL
+
 echo Disable Throttle States
 powercfg -setacvalueindex scheme_current sub_processor THROTTLING 0
 Reg.exe add "HKLM\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\0cc5b647-c1df-4637-891a-dec35c318583" /v "ValueMin" /t REG_DWORD /d "0" /f
@@ -1147,9 +1152,6 @@ goto menu
 
 :mouse
 echo Performing mouse tweaks...
-echo Disabling Filter Keys (the filterkeys app is completely useless, dont use it)
-Reg.exe add "HKCU\Control Panel\Accessibility\Keyboard Response" /v "Flags" /t REG_SZ /d "122" /f
-timeout /t 1 /nobreak > NUL
 echo Disabling Toggle Keys
 Reg.exe add "HKCU\Control Panel\Accessibility\ToggleKeys" /v "Flags" /t REG_SZ /d "58" /f
 timeout /t 1 /nobreak > NUL
@@ -1173,16 +1175,19 @@ goto menu
 
 :kbm
 echo Performing keyboard tweaks...
-Reg.exe add "HKCU\Control Panel\Keyboard" /v "KeyboardDelay" /t REG_SZ /d "0" /f
+Reg.exe add "HKCU\Control Panel\Accessibility\Keyboard Response" /v "Flags" /t REG_SZ /d "1" /f
 timeout /t 1 /nobreak > NUL
 
-echo Increasing Keyboard Repeat Rate
-Reg.exe add "HKCU\Control Panel\Keyboard" /v "KeyboardSpeed" /t REG_SZ /d "31" /f
+echo set Available to 1
+Reg.exe add "HKCU\Control Panel\Accessibility\Keyboard Response" /v "Available" /t REG_SZ /d "1" /f
 timeout /t 1 /nobreak > NUL
 
-echo Setting CSRSS to Realtime
-Reg.exe add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\csrss.exe\PerfOptions" /v "CpuPriorityClass" /t REG_DWORD /d "4" /f 
-Reg.exe add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\csrss.exe\PerfOptions" /v "IoPriority" /t REG_DWORD /d "3" /f 
+echo set AutoRepeatDelay to 90 
+Reg.exe add "HKCU\Control Panel\Accessibility\Keyboard Response" /v "AutoRepeatDelay" /t REG_SZ /d "90" /f
+timeout /t 1 /nobreak > NUL
+
+echo AutoRepeatRate 25
+Reg.exe add "HKCU\Control Panel\Accessibility\Keyboard Response" /v "AutoRepeatRate" /t REG_SZ /d "25" /f
 timeout /t 1 /nobreak > NUL
 echo Performing keyboard tweaks complete...
 pause
